@@ -1,5 +1,5 @@
 ## 1. How much is the current memory capacity of a canister?
-**ANSWER**: At present, canisters are practically limited to 4 GB memory size. This is because the size memory uses a 32-bit addressing scheme, and when a container is updated, its Wasm-memory is erased.
+**ANSWER**: The stable memory of a canister is 8 GB (used to be 4 GB). The Wasm heap is limited to 4 GB.
 
 ## 2. What is the issue with the following code sample?
 ```motoko
