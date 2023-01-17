@@ -27,7 +27,7 @@ actor {
   };
 }
 ```
-**ANSWER**: The `type` of the `message` variable at declaration is `Text` 
+**ANSWER**: The `type` of the `message` variable at declaration is `Text`, therefore, we can not assign a number to `message`.
 
 ## 4. False or True: we can remove the keyword async for return argument of a query function since queries are faster to answer.
-**ANSWER**: False
+**ANSWER**: False.
