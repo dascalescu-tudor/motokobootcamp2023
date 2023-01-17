@@ -1,5 +1,5 @@
 ## 1. How much is the current memory capacity of a canister?
-**ANSWER**: The stable memory of a canister is 8 GB (used to be 4 GB). The Wasm heap is limited to 4 GB.
+**ANSWER**: The stable memory of a canister is 8 GB (used to be 4 GB). The Wasm heap is limited to 4 GB, but one canister can store up to 48GB of data! Moreover this is a temporary limitation and the memory limitation is frequently uplifted.
 
 ## 2. What is the issue with the following code sample?
 ```motoko
