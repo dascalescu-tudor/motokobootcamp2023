@@ -1,11 +1,11 @@
 ## 1. Who controls the ledger canister?
-**ANSWER**: 
+**ANSWER**: The NNS controls the ledger canister.
 
 ## 2.What is the subnet of the canister with the id: **mwrha-maaaa-aaaab-qabqq-cai**? How much nodes are running this subnet?
-**ANSWER**: 
+**ANSWER**: Subnet Id: pae4o-o6dxf-xki7q-ezclx-znyd6-fnk6w-vkv5z-5lfwh-xym2i-otrrw-fqe. Nodes: 16
 
 ## 3. I have a neuron with 1O ICPs locked with a dissolve delay of 4 years - my neuron has been locked for 2 years. What is my expected voting power?
-**ANSWER**: 
+**ANSWER**: 14.04
 
 ## 4. What is wrong with the following code?
 
@@ -20,7 +20,7 @@ actor {
  
 }
 ```
-**ANSWER**: 
+**ANSWER**: The import of Nat is missing and variables n, t are redudant.
 
 ## 5. What is wrong with the following code?
 ```motoko
@@ -33,7 +33,7 @@ actor {
  
 }
 ```
-**ANSWER**: 
+**ANSWER**: Fisrt of all, we must write `var` inside the `languages` array. Second, shared types, used in messaging, cannot contain mutable fields or arrays.
 
 ## 6. What is wrong with the following code?
 ```motoko
@@ -47,4 +47,4 @@ actor {
  
 }
 ```
-**ANSWER**: 
+**ANSWER**: The import of Array lib is missing, and append is deppricated. It is better to use a Buffer.
