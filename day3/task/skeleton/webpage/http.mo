@@ -1,6 +1,19 @@
 module Http {
     public type HeaderField = (Text, Text);
 
+    public type StreamingCallbackToken =  {
+        content_encoding : Text;
+        index            : Nat;
+        key              : Text;
+    };
+
+     public type StreamingCallbackResponse = {
+        body  : Blob;
+        token : ?StreamingCallbackToken;
+    };
+
+    public type StreamingCallback = query (StreamingCallbackToken) -> async (StreamingCallbackResponse);
+
     public type HttpRequest = {
         body: Blob;
         headers: [HeaderField];
@@ -22,16 +35,4 @@ module Http {
         };
     };
 
-    public type StreamingCallback = query (StreamingCallbackToken) -> async (StreamingCallbackResponse);
-
-    public type StreamingCallbackToken =  {
-        content_encoding : Text;
-        index            : Nat;
-        key              : Text;
-    };
-
-    public type StreamingCallbackResponse = {
-        body  : Blob;
-        token : ?StreamingCallbackToken;
-    };
 }
