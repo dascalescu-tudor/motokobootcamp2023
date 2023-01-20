@@ -32,9 +32,9 @@ actor Dao{
 
     system func postupgrade() {
         
-        for(proposal in stableProposals.vals()){
-            proposals.put(proposal.0, proposal.1);
-        };
+        // for(proposal in stableProposals.vals()){
+        //     proposals.put(proposal.0, proposal.1);
+        // };
         stableProposals := [];
     };
 
