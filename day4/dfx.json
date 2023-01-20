@@ -3,7 +3,7 @@
     "canisters": {
         "main": {
             "type": "motoko",
-            "main": "./challenges.mo"
+            "main": "./dao_test.mo"
         }
     }
 }

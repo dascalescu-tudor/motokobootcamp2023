@@ -1,17 +1,28 @@
 export const idlFactory = ({ IDL }) => {
-  const List = IDL.Rec();
-  List.fill(IDL.Opt(IDL.Tuple(IDL.Nat, List)));
+  const Status = IDL.Variant({
+    'Rejected' : IDL.Null,
+    'Accepted' : IDL.Null,
+    'Pending' : IDL.Null,
+  });
+  const Proposal = IDL.Record({
+    'id' : IDL.Nat,
+    'status' : Status,
+    'creator' : IDL.Principal,
+    'downVotes' : IDL.Nat,
+    'upVotes' : IDL.Nat,
+    'motion' : IDL.Text,
+  });
   return IDL.Service({
-    'add_username' : IDL.Func([IDL.Text], [], []),
-    'find_in_buffer_test' : IDL.Func([], [IDL.Opt(IDL.Nat)], []),
-    'get_usernames' : IDL.Func(
-        [],
-        [IDL.Vec(IDL.Tuple(IDL.Principal, IDL.Text))],
+    'creat_proposal' : IDL.Func(
+        [IDL.Text],
+        [IDL.Variant({ 'ok' : IDL.Text, 'error' : IDL.Text })],
         [],
       ),
-    'is_anynomous' : IDL.Func([], [IDL.Bool], []),
-    'reverse_test' : IDL.Func([List], [List], []),
-    'unique_test' : IDL.Func([List], [List], []),
+    'list_all_proposals' : IDL.Func(
+        [],
+        [IDL.Vec(IDL.Tuple(IDL.Nat, Proposal))],
+        ['query'],
+      ),
   });
 };
 export const init = ({ IDL }) => { return []; };

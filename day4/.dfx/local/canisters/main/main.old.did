@@ -1,16 +1,13 @@
-type List = 
- opt record {
-       nat;
-       List;
-     };
+type Proposal = 
+ record {
+   creator: principal;
+   downVotes: nat;
+   motion: text;
+   upVotes: nat;
+ };
 service : {
-  add_username: (text) -> ();
-  find_in_buffer_test: () -> (opt nat);
-  get_usernames: () -> (vec record {
-                              principal;
-                              text;
-                            });
-  is_anynomous: () -> (bool);
-  reverse_test: (List) -> (List);
-  unique_test: (List) -> (List);
+  create_proposal: (opt text) -> (text);
+  get_all_proposals: () -> (vec Proposal) query;
+  get_proposal_by_id: (nat) -> (opt Proposal) query;
+  up_vote: (nat) -> (text);
 }

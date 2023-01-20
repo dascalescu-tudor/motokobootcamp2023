@@ -1,4 +1,7 @@
 // Version: 1.0.0
+type Proposal =
+  {creator : Principal; downVotes : Nat; motion : Text; upVotes : Nat};
 actor {
-  
+  stable var proposalID : Nat;
+  stable var proposals : [Proposal]
 };
