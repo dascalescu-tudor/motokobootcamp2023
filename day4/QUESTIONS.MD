@@ -23,4 +23,4 @@ actor {
   };
 }
 ```
-**ANSWER**: Removing a parameter of a public function would change the Candid interface, but in this case there's no information being saved in the memory of the canister, so upgrading is safe because you won't lose anything.
+**ANSWER**: Removing a parameter of a public function would change the Candid interface and data would be lost. In this case there's no information being saved in the memory of the canister, so upgrading is safe because you won't lose anything.

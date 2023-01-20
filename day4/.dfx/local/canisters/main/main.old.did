@@ -1,0 +1,16 @@
+type List = 
+ opt record {
+       nat;
+       List;
+     };
+service : {
+  add_username: (text) -> ();
+  find_in_buffer_test: () -> (opt nat);
+  get_usernames: () -> (vec record {
+                              principal;
+                              text;
+                            });
+  is_anynomous: () -> (bool);
+  reverse_test: (List) -> (List);
+  unique_test: (List) -> (List);
+}
