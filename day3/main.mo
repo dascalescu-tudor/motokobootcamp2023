@@ -11,11 +11,11 @@ import Utils "./utils";
     var bookList : List<Book> = List.nil<Book>();
 
     //7. In main.mo create a function called add_book that takes a book as parameter and returns nothing this function should add this book to your list. Then create a second function called get_books that takes no parameter but returns an Array that contains all books stored in the list.
-    func add_book(book : Book) : () {
+    public func add_book(book : Book) : async () {
         bookList := List.push<Book>(book, bookList);
     };
 
-    func get_books() : [Book]{
+    public func get_books() : async [Book]{
         let books : [Book] = List.toArray<Book>(bookList);
         return books
     };
