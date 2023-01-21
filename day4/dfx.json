@@ -1,9 +1,0 @@
-{
-    "version": 1,
-    "canisters": {
-        "main": {
-            "type": "motoko",
-            "main": "./dao_test.mo"
-        }
-    }
-}
