@@ -47,22 +47,27 @@ actor Dao{
 
     // Create, Read, Update, Delete
 
-    public shared ({caller}) func creat_proposal(motion : Text) : async {#ok : Text; #error : Text}{
-        if(motion == "") {
-            return #error("Enter a valid proposal");
+    public shared ({caller}) func create_proposal(motion : Text) : async {#ok : Text; #error : Text}{
+        if(Principal.isAnonymous(caller))
+        {
+            return #error("You must login with your identity");
         } else {
-            let newProposal = {
-                id = proposalCurrentID;
-                creator = caller;
-                motion = motion;
-                downVotes = 0;
-                upVotes = 0;
-                status = #Pending;
-                voters = List.nil<Principal>();
+            if(motion == "") {
+                return #error("Enter a valid proposal");
+            } else {
+                let newProposal = {
+                    id = proposalCurrentID;
+                    creator = caller;
+                    motion = motion;
+                    downVotes = 0;
+                    upVotes = 0;
+                    status = #Pending;
+                    voters = List.nil<Principal>();
+                };
+                proposals.put(proposalCurrentID, newProposal);
+                proposalCurrentID += 1;
+                return #ok("New proposal have been created successfully");
             };
-            proposals.put(proposalCurrentID, newProposal);
-            proposalCurrentID += 1;
-            return #ok("New proposal have been created successfully");
         };
     };
 
@@ -83,135 +88,155 @@ actor Dao{
     };
 
     public shared ({caller}) func update_proposal_motion(id : Nat, newMotion : Text) : async {#ok : Text; #error : Text}{
-        let wantedProposal : ?Proposal = proposals.get(id);
-        switch(wantedProposal){
-            case null {
-                return #error("Proposal with id: " # Nat.toText(id) # " does not exist");
-            };
-            case(?found){
-                if(caller == found.creator){
-                    let updatedProposal = {
-                        id = found.id;
-                        creator = found.creator;
-                        motion = newMotion;
-                        downVotes = found.downVotes;
-                        upVotes = found.upVotes;
-                        status = found.status;
-                        voters = found.voters;
-                    };
-                    let result = proposals.replace(id, updatedProposal);
-                    switch(result){
-                        case null {
-                            return #error("Proposal does not exist");
+         if(Principal.isAnonymous(caller))
+        {
+            return #error("You must login with your identity");
+        } else {
+            let wantedProposal : ?Proposal = proposals.get(id);
+            switch(wantedProposal){
+                case null {
+                    return #error("Proposal with id: " # Nat.toText(id) # " does not exist");
+                };
+                case(?found){
+                    if(caller == found.creator){
+                        let updatedProposal = {
+                            id = found.id;
+                            creator = found.creator;
+                            motion = newMotion;
+                            downVotes = found.downVotes;
+                            upVotes = found.upVotes;
+                            status = found.status;
+                            voters = found.voters;
                         };
-                        case(?allGood){
-                            return #ok("New proposal have been created successfully");
+                        let result = proposals.replace(id, updatedProposal);
+                        switch(result){
+                            case null {
+                                return #error("Proposal does not exist");
+                            };
+                            case(?allGood){
+                                return #ok("New proposal have been created successfully");
+                            };
                         };
-                    };
-                } else return #error("You are not allowed to change the proposal");
+                    } else return #error("You are not allowed to change the proposal");
+                };
             };
         };
     };
 
     public shared ({caller}) func up_vote(id : Nat) : async {#ok : Text; #error : Text}{
-        let wantedProposal : ?Proposal = proposals.get(id);
-        switch(wantedProposal){
-            case null {
-                return #error("Proposal with id: " # Nat.toText(id) # " does not exist");
-            };
-            case(?found){
+        if(Principal.isAnonymous(caller))
+        {
+            return #error("You must login with your identity");
+        } else {
+            let wantedProposal : ?Proposal = proposals.get(id);
+            switch(wantedProposal){
+                case null {
+                    return #error("Proposal with id: " # Nat.toText(id) # " does not exist");
+                };
+                case(?found){
 
-                let findVoter : ?Principal = List.find<Principal>(found.voters, func x = if(Principal.equal(x, caller)){true} else {false}); 
+                    let findVoter : ?Principal = List.find<Principal>(found.voters, func x = if(Principal.equal(x, caller)){true} else {false}); 
 
-                switch(findVoter){
-                    case(null){
-                        let newVotersList = List.push<Principal>(caller, found.voters);
-                        let updatedProposal = {
-                            id = found.id;
-                            creator = found.creator;
-                            motion = found.motion;
-                            downVotes = found.downVotes;
-                            upVotes = found.upVotes + 1;
-                            status = found.status;
-                            voters = newVotersList;
-                        };
-                        let result = proposals.replace(id, updatedProposal);
-                        switch(result){
-                            case null {
-                                return #error("Proposal does not exist");
+                    switch(findVoter){
+                        case(null){
+                            let newVotersList = List.push<Principal>(caller, found.voters);
+                            let updatedProposal = {
+                                id = found.id;
+                                creator = found.creator;
+                                motion = found.motion;
+                                downVotes = found.downVotes;
+                                upVotes = found.upVotes + 1;
+                                status = found.status;
+                                voters = newVotersList;
                             };
-                            case(?allGood){
-                                return #ok("Thanks for your vote.");
+                            let result = proposals.replace(id, updatedProposal);
+                            switch(result){
+                                case null {
+                                    return #error("Proposal does not exist");
+                                };
+                                case(?allGood){
+                                    return #ok("Thanks for your vote.");
+                                };
                             };
+                        }; 
+                        case(?alreadyVoted){
+                            return #error("You are not allowed to vote twice");
                         };
-                    }; 
-                    case(?alreadyVoted){
-                        return #error("You are not allowed to vote twice");
                     };
                 };
             };
-        };
+        }
     };
 
     public shared ({caller}) func down_vote(id : Nat) : async {#ok : Text; #error : Text}{
-        let wantedProposal : ?Proposal = proposals.get(id);
-        switch(wantedProposal){
-            case null {
-                return #error("Proposal with id: " # Nat.toText(id) # " does not exist");
-            };
-            case(?found){
+        if(Principal.isAnonymous(caller))
+        {
+            return #error("You must login with your identity");
+        } else {
+            let wantedProposal : ?Proposal = proposals.get(id);
+            switch(wantedProposal){
+                case null {
+                    return #error("Proposal with id: " # Nat.toText(id) # " does not exist");
+                };
+                case(?found){
 
-                let findVoter : ?Principal = List.find<Principal>(found.voters, func x = if(Principal.equal(x, caller)){true} else {false}); 
+                    let findVoter : ?Principal = List.find<Principal>(found.voters, func x = if(Principal.equal(x, caller)){true} else {false}); 
 
-                switch(findVoter){
-                    case(null){
-                        let newVotersList = List.push<Principal>(caller, found.voters);
-                        let updatedProposal = {
-                            id = found.id;
-                            creator = found.creator;
-                            motion = found.motion;
-                            downVotes = found.downVotes;
-                            upVotes = found.upVotes + 1;
-                            status = found.status;
-                            voters = newVotersList;
+                    switch(findVoter){
+                        case(null){
+                            let newVotersList = List.push<Principal>(caller, found.voters);
+                            let updatedProposal = {
+                                id = found.id;
+                                creator = found.creator;
+                                motion = found.motion;
+                                downVotes = found.downVotes;
+                                upVotes = found.upVotes + 1;
+                                status = found.status;
+                                voters = newVotersList;
+                            };
+                            let result = proposals.replace(id, updatedProposal);
+                            switch(result){
+                                case null {
+                                    return #error("Proposal does not exist");
+                                };
+                                case(?allGood){
+                                    return #ok("Thanks for your vote.");
+                                };
+                            };
+                        }; 
+                        case(?alreadyVoted){
+                            return #error("You are not allowed to vote twice");
                         };
-                        let result = proposals.replace(id, updatedProposal);
+                    };
+                };
+            };
+        }
+    };
+
+    public shared ({caller}) func delete_proposal(id : Nat) : async {#ok : Text; #error : Text}{
+        if(Principal.isAnonymous(caller))
+            {
+                return #error("You must login with your identity");
+            } else { 
+                let wantedProposal : ?Proposal = proposals.get(id);
+            switch(wantedProposal){
+                case null {
+                    return #error("Proposal with id: " # Nat.toText(id) # " does not exist");
+                };
+                case(?found){
+                    if(caller == found.creator){
+                        let result = proposals.remove(id);
                         switch(result){
                             case null {
                                 return #error("Proposal does not exist");
                             };
                             case(?allGood){
-                                return #ok("Thanks for your vote.");
+                                return #ok("Proposal with id: " # Nat.toText(id) # " has been deleted");
                             };
                         };
-                    }; 
-                    case(?alreadyVoted){
-                        return #error("You are not allowed to vote twice");
-                    };
+                    } else return #error("You are not allowed to delete this proposal");
                 };
             };
-        };
-    };
-
-    public shared ({caller}) func delete_proposal(id : Nat) : async {#ok : Text; #error : Text}{
-        let wantedProposal : ?Proposal = proposals.get(id);
-        switch(wantedProposal){
-            case null {
-                return #error("Proposal with id: " # Nat.toText(id) # " does not exist");
-            };
-            case(?found){
-                if(caller == found.creator){
-                    let result = proposals.remove(id);
-                    switch(result){
-                        case null {
-                            return #error("Proposal does not exist");
-                        };
-                        case(?allGood){
-                            return #ok("Proposal with id: " # Nat.toText(id) # " has been deleted");
-                        };
-                    };
-                } else return #error("You are not allowed to delete this proposal");
-            };
-        };
+        }
     };
 };
